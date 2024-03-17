@@ -1,4 +1,3 @@
-import sys
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 import glob
@@ -29,23 +28,6 @@ def normalize_vectors(vectors):
     normalized_vectors = vectors / magnitudes[:, np.newaxis]
     return normalized_vectors
 
-def plot_heatmap(rmsd_matrix, file_names):
-    plt.imshow(rmsd_matrix, cmap='viridis', origin='lower', extent=[0, len(file_names), 0, len(file_names)])
-    plt.colorbar(label='True RMSD (normalized)')
-    plt.xticks(np.arange(len(file_names)), file_names, rotation='vertical')
-    plt.yticks(np.arange(len(file_names)), file_names)
-    plt.xlabel('Reference Structure')
-    plt.ylabel('Compared Structure')
-    plt.title('True RMSD Heatmap (normalized)')
-    plt.show()
-
-def save_rmsd_to_file(file_a, file_b, norm_rmsd, threshold=0.75):
-    if norm_rmsd > threshold:
-        rmsd_text_file = 'true_conformers.txt'
-        with open(rmsd_text_file, 'a') as rmsd_file:
-            rmsd_file.write(f'The true RMSD (normalized) between {file_a} and {file_b} is {norm_rmsd}\n\n')
-            rmsd_file.write(f'   ###############################################################\n   ### You found a new isomer with the name {file_b} ###\n   ###############################################################\n\n\n')
-
 def process_structures(isomer_list, destination_list, iteration, threshold):
     for i in range(iteration, len(isomer_list)):
         vectors_a = load_vectors(isomer_list[iteration-1])
@@ -57,12 +39,6 @@ def process_structures(isomer_list, destination_list, iteration, threshold):
         if norm_rmsd > threshold:
             destination_list.append(isomer_list[i])
 
-#if len(sys.argv) != 2:
-#    print("Usage: python align.py directory_path")
-#    sys.exit(1)
-
-#directory_path = sys.argv[1]
-#xyz_files = glob.glob(f'{directory_path}/*.xyz')
 xyz_files = sorted(glob.glob('*.xyz'))
 
 num_files = len(xyz_files)
@@ -85,8 +61,6 @@ for i in range(num_files):
         rmsd_matrix[i, j] = rmsd_matrix[j, i] = norm_rmsd
 
 unique_isomers_1 = [xyz_files[0]]
-
-### Cresting the new lists:
 
 unique_isomers_2 = []
 unique_isomers_3 = []
